@@ -64,18 +64,24 @@ return axios.get(NOW_PLAYING_ENDPOINT, {
 app.get("/", async (req:any, res:any) => {
     const response = await getNowPlaying();
    console.log(response);
+   if(response.status == 200){
     const data = {
-        isPlaying: response.data.is_playing,
-        title: response.data.item.name,
-        album: response.data.item.album.name,
-        artist: response.data.item.album.artists
-          .map((artist:any) => artist.name)
-          .join(', '),
-        albumImageUrl: response.data.item.album.images[0].url,
-        songUrl: response.data.item.external_urls.spotify,
-      };
-  
-     res.send(data);
+      isPlaying: response.data.is_playing,
+      title: response.data.item.name,
+      album: response.data.item.album.name,
+      artist: response.data.item.album.artists
+        .map((artist:any) => artist.name)
+        .join(', '),
+      albumImageUrl: response.data.item.album.images[0].url,
+      songUrl: response.data.item.external_urls.spotify,
+    };
+
+   res.send(data);
+   }
+   else{
+    res.status(200).send({status:"inactive"})
+   }
+    
 });
 
 app.listen(4000, () => console.log("Server ready on port 4000."));
