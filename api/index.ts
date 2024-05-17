@@ -4,7 +4,7 @@ const express= require("express");
 const app = express();
 const axios = require('axios');
 const querystring = require("querystring");
-const https = require('https')
+const cors = require("cors")
 
 const {
     SPOTIFY_CLIENT_ID: client_id,
@@ -61,6 +61,13 @@ return axios.get(NOW_PLAYING_ENDPOINT, {
     },
 });
 };  
+
+app.use(cors({
+  origin: '*', // Wildcard is NOT for Production
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+}));
+
 app.get("/", async (req:any, res:any) => {
     const response = await getNowPlaying();
    console.log(response);
