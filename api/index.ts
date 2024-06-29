@@ -4,7 +4,7 @@ const express= require("express");
 const app = express();
 const axios = require('axios');
 const querystring = require("querystring");
-const cors = require("cors")
+const cors = require("cors");
 
 const {
     SPOTIFY_CLIENT_ID: client_id,
@@ -69,8 +69,8 @@ app.use(cors({
 }));
 
 app.get("/", async (req:any, res:any) => {
-    const response = await getNowPlaying();
-   console.log(response);
+   const response = await getNowPlaying();
+   console.log("fetching from api");
    if(response.status == 200){
     const data = {
       isPlaying: response.data.is_playing,
@@ -81,8 +81,9 @@ app.get("/", async (req:any, res:any) => {
         .join(', '),
       albumImageUrl: response.data.item.album.images[0].url,
       songUrl: response.data.item.external_urls.spotify,
+      timestamp:response.data.timestamp
     };
-
+   
    res.send(data);
    }
    else{
