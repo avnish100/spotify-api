@@ -16,7 +16,7 @@ const {
 const token = Buffer.from(`${client_id}:${client_secret}`).toString('base64');
 const NOW_PLAYING_ENDPOINT = `https://api.spotify.com/v1/me/player/currently-playing`;
 const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;
-
+const LAST_PLAYED_ENDPOINT = ` https://api.spotify.com/v1/me/player/recently-played`
 // interface SpotifyData {
 //     is_playing: boolean;
 //     item: {
@@ -62,6 +62,15 @@ return axios.get(NOW_PLAYING_ENDPOINT, {
 });
 };  
 
+export const lastplayed = async () => {
+  const access_token = await getAccessToken();
+  return axios.get(LAST_PLAYED_ENDPOINT,{
+    headers:{
+      Authorization :  `Bearer ${access_token}`
+    }
+  })
+}
+
 app.use(cors({
   origin: '*', // Wildcard is NOT for Production
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -91,6 +100,25 @@ app.get("/", async (req:any, res:any) => {
    }
     
 });
+
+app.get("/lastplayed",async(req:any,res:any) =>{
+  const response = await lastplayed();
+  console.log("fetching last Played");
+  if(response.status == 200){
+    console.log(response.data.items)
+    const lastPlayedTrack = response.data.items[0].track;
+    const lastPlayedTime = response.data.items[0].played_at // Assuming the first item is the last played track
+    const { name, artists, album,played_at} = lastPlayedTrack;
+    const data = {
+        name: name,
+        artist: artists[0].name,
+        playedat: lastPlayedTime,
+        albumImageUrl: album.images[0].url
+    }
+    res.send(data)
+  }
+}
+);
 
 app.listen(4000, () => console.log("Server ready on port 4000."));
 
